@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MMSE智能自测量表</title>
+    <style>
+        :root {
+            --primary: #2196F3;
+            --correct: #4CAF50;
+            --wrong: #f44336;
+            --bg: #f5f5f5;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 8px;
+            background: var(--bg);
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            text-align: center;
+            margin: 0 0 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .question-group {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .question-group h3 {
+            font-size: 1rem;
+            color: #444;
+            margin: 0 0 10px;
+        }
+
+        .question-item {
+            margin: 8px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #eee;
+        }
+
+        .question-item > span {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .judge-btn {
+            padding: 12px;
+            border: 2px solid transparent;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .correct-btn {
+            background: #e8f5e9;
+            color: var(--correct);
+        }
+        .correct-btn.selected {
+            background: var(--correct);
+            color: white;
+        }
+
+        .wrong-btn {
+            background: #ffebee;
+            color: var(--wrong);
+        }
+        .wrong-btn.selected {
+            background: var(--wrong);
+            color: white;
+        }
+
+        #result {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            background: #e3f2fd;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .education-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 0.95rem;
+            appearance: none;
+            background: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232196F3'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e") no-repeat right 12px center/12px;
+        }
+
+        #submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .svg-container {
+            max-width: 180px;
+            margin: 10px auto;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .svg-container svg {
+            width: 100%;
+            height: auto;
+        }
+
+        @media (min-width: 400px) {
+            .judge-btn {
+                padding: 12px 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MMSE精神状态检查量表（30题完整版）</h1>
+        
+        <select class="education-select" id="education">
+            <option value="illiterate">文盲</option>
+            <option value="primary">小学</option>
+            <option value="secondary">中学及以上</option>
+        </select>
+
+        <!-- 时间定向（5题） -->
+        <div class="question-group">
+            <h3>时间定向（每题1分）</h3>
+            <div class="question-item" data-score="1">
+                <span>1. 正确说出当前年份</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>2. 正确说出当前季节</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>3. 正确说出当前月份</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>4. 正确说出今天是几号</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>5. 正确说出今天是星期几</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 地点定向（5题） -->
+        <div class="question-group">
+            <h3>地点定向（每题1分）</h3>
+            <div class="question-item" data-score="1">
+                <span>6. 正确说出所在省份</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>7. 正确说出所在城市</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>8. 正确说出所在区县</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>9. 正确说出所在街道</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>10. 正确说出所在建筑物名称</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 即刻记忆（3题） -->
+        <div class="question-group">
+            <h3>即刻记忆（每题1分）告诉被测试者您将问几个问题来检查他/她的记忆力，然后清楚、缓慢地说出3个相互无关地东西的名称（如：皮球、国旗、树木、大约1秒钟说一个）。说完所有的3个名称之后，要求被测试者重复它们。被测试者的得分取决于他们首次重复的答案。（答对1个得1分，最多得3分）。如果他们没能完全记住，你可以重复，但重复的次数不能超过5次。如果5次后他们仍未记住所有的3个名称，那么对于回忆能力的检查就没有意义了。</h3>
+            <div class="question-item" data-score="1">
+                <span>11. 复述词语：苹果</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>12. 复述词语：手表</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>13. 复述词语：国旗</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 计算力（5题） -->
+        <div class="question-group">
+            <h3>计算力（每题1分）要求从100开始减7，之后再减7，一直减5次（即93，86，79，72，65）。每答对1个得1分，如果前次错了，但下一个答案是对的，也得1分。</h3>
+            <div class="question-item" data-score="1">
+                <span>14. 100-7=93</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>15. 93-7=86</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>16. 86-7=79</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>17. 79-7=72</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>18. 72-7=65</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 延迟回忆（3题） -->
+        <div class="question-group">
+            <h3>延迟回忆（每题1分）如果前次被测试者完全记住了3个名称，现在就让他们再重复一遍。每正确重复1个得1分。最高3分</h3>
+            <div class="question-item" data-score="1">
+                <span>19. 回忆词语：苹果</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>20. 回忆词语：手表</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>21. 回忆词语：国旗</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 语言能力（9题） -->
+        <div class="question-group">
+            <h3>语言能力（每题1分）</h3>
+            <div class="question-item" data-score="1">
+                <span>22. 命名：铅笔（拿出实物或其他物品给测试者看，要求他们说出这是什么？）</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>23. 复述：四十四只石狮子（要求被测试者注意你说的话并重复一次，注意只允许重复一次。只有正确，咬字清楚的才记1分。）</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>24. 执行指令：用右手拿纸（给被测试者一张空白的平纸，要求对方按你的命令去做，注意不要重复或示范。只有他们按正确顺序做的动作才算正确，每个正确动作计1分。）</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>25. 执行指令：对折两次（给被测试者一张空白的平纸，要求对方按你的命令去做，注意不要重复或示范。只有他们按正确顺序做的动作才算正确，每个正确动作计1分。）</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>26. 执行指令：放在大腿上（给被测试者一张空白的平纸，要求对方按你的命令去做，注意不要重复或示范。只有他们按正确顺序做的动作才算正确，每个正确动作计1分。）</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>27. 阅读执行：闭上眼睛（拿出一张“闭上您的眼睛”卡片给被测试者看，要求被测试者读它并按要求去做。只有他们确实闭上眼睛才能得分）</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>28. 写出完整句子（给被测试者一张白纸，让他们自发的写出一句完整的句子。句子必须有主语、动词，并有意义。注意你不能给予任何提示。语法和标点的错误可以忽略。）</span>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>29. 临摹图形结构正确要求被测试者照样准确地画出来，同时画出两个图形交叉处，线条的抖动和图形的旋转可以忽略。）</span>
+                <div class="svg-container">
+                    <svg viewBox="0 0 300 300">
+                        <circle cx="150" cy="150" r="100" stroke="#000" stroke-width="4" fill="none"/>
+                        <polygon points="200 50,250 100,250 150,200 200,150 200,100 150,100 100,150 50" 
+                                 stroke="#000" stroke-width="4" fill="none"
+                                 transform="scale(0.8) translate(50, -50)"/>
+                    </svg>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+            <div class="question-item" data-score="1">
+                <span>30. 临摹图形交叉正确（要求被测试者照样准确地画出来，同时画出两个图形交叉处，线条的抖动和图形的旋转可以忽略。）</span>
+                <div class="svg-container">
+                    <svg viewBox="0 0 300 300">
+                        <circle cx="150" cy="150" r="100" stroke="#000" stroke-width="4" fill="none"/>
+                        <polygon points="200 50,250 100,250 150,200 200,150 200,100 150,100 100,150 50" 
+                                 stroke="#000" stroke-width="4" fill="none"
+                                 transform="scale(0.8) translate(50, -50)"/>
+                    </svg>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="judge-btn correct-btn">正确</button>
+                    <button type="button" class="judge-btn wrong-btn">错误</button>
+                </div>
+            </div>
+        </div>
+
+        <button id="submit-btn">提交评估</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const answerMap = new Map();
+
+        document.querySelectorAll('.judge-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const question = this.closest('.question-item');
+                question.querySelectorAll('.judge-btn').forEach(b => {
+                    b.classList.remove('selected');
+                    b.disabled = false;
+                });
+                
+                this.classList.add('selected');
+                this.disabled = true;
+                
+                const score = this.classList.contains('correct-btn') 
+                            ? parseInt(question.dataset.score) 
+                            : 0;
+                answerMap.set(question, score);
+            });
+        });
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            const totalScore = Array.from(answerMap.values()).reduce((a,b) => a + b, 0);
+            const education = document.getElementById('education').value;
+            const thresholds = { illiterate:17, primary:20, secondary:24 };
+            
+            const resultHTML = `
+                <h3>评估结果</h3>
+                <p>总得分：${totalScore}/30</p>
+                <p>教育程度：${document.getElementById('education').selectedOptions[0].text}</p>
+                <p>判断标准：≥${thresholds[education]}分</p>
+                <p style="color:${totalScore >= thresholds[education] ? 'var(--correct)' : 'var(--wrong)'};font-weight:bold;">
+                    ${totalScore >= thresholds[education] ? '认知功能正常' : '可能存在认知障碍'}
+                </p>
+                <p>${getRecommendation(totalScore)}</p>
+            `;
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = resultHTML;
+            resultDiv.style.display = 'block';
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
+
+        function getRecommendation(score) {
+            if(score >= 27) return '建议：保持当前状态，每年定期复查';
+            if(score >= 21) return '建议：3-6个月后复查跟踪';
+            if(score >= 10) return '建议：1个月内就医专业评估';
+            return '建议：立即就医进行详细检查';
+        }
+    </script>
+</body>
+</html>
