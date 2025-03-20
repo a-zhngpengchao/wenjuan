@@ -42,6 +42,30 @@
             border-bottom: 1px solid #eee;
         }
 
+        .personal-info {
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            margin: 10px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #444;
+            font-size: 0.95rem;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
         .question-group {
             margin-bottom: 15px;
             padding: 12px;
@@ -160,6 +184,21 @@
     <div class="container">
         <h1>MMSE精神状态检查量表（30题完整版）</h1>
         
+        <div class="personal-info">
+            <div class="input-group">
+                <label for="name">姓名</label>
+                <input type="text" id="name" placeholder="请输入姓名" required>
+            </div>
+            <div class="input-group">
+                <label for="age">年龄</label>
+                <input type="number" id="age" placeholder="请输入年龄" min="1" max="150" required>
+            </div>
+            <div class="input-group">
+                <label for="phone">手机号</label>
+                <input type="tel" id="phone" placeholder="请输入手机号" pattern="[0-9]{11}" required>
+            </div>
+        </div>
+
         <select class="education-select" id="education">
             <option value="illiterate">文盲</option>
             <option value="primary">小学</option>
@@ -448,12 +487,29 @@
         });
 
         document.getElementById('submit-btn').addEventListener('click', () => {
+            const name = document.getElementById('name').value.trim();
+            const age = document.getElementById('age').value;
+            const phone = document.getElementById('phone').value.trim();
+
+            if (!name || !age || !phone) {
+                alert('请填写完整的个人信息（姓名、年龄、手机号）');
+                return;
+            }
+
+            if (!/^\d{11}$/.test(phone)) {
+                alert('请输入正确的11位手机号');
+                return;
+            }
+
             const totalScore = Array.from(answerMap.values()).reduce((a,b) => a + b, 0);
             const education = document.getElementById('education').value;
             const thresholds = { illiterate:17, primary:20, secondary:24 };
             
             const resultHTML = `
                 <h3>评估结果</h3>
+                <p>姓名：${name}</p>
+                <p>年龄：${age}岁</p>
+                <p>手机号：${phone}</p>
                 <p>总得分：${totalScore}/30</p>
                 <p>教育程度：${document.getElementById('education').selectedOptions[0].text}</p>
                 <p>判断标准：≥${thresholds[education]}分</p>
